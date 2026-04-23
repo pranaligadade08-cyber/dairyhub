@@ -20,6 +20,8 @@ urlpatterns = [
     # Language switching
     path('change-language/', views.change_language, name='change_language'),
 
+    path('', views.home, name='home'),
+
     # Password reset
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
