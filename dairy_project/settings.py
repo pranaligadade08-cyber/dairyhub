@@ -51,7 +51,7 @@ if _railway_domain:
     ALLOWED_HOSTS.append(_railway_domain)
 
 if DEBUG:
-    ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["dairyhub.onrender.com"]
 
 # -----------------------------------------------------------------------
 # Application definition
