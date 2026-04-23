@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monthly Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white">
+
+<!-- 🌐 Language Button -->
+<a href="/change-language/" style="position:fixed; top:20px; right:20px; background:#27ae60; padding:10px; border-radius:8px; color:white;">
+🌐 EN / मराठी
+</a>
+
+<div class="container mt-5">
+
+    <!-- 🔹 Title -->
+    <h1 class="text-center">
+        {% if request.session.lang == 'mr' %}
+            मासिक अहवाल
+        {% else %}
+            Monthly Report
+        {% endif %}
+    </h1>
+
+    <!-- 🔹 Filter -->
+    <form method="get" class="text-center mb-4">
+        <input type="month" name="month" value="{{ selected_month }}" class="form-control w-25 d-inline">
+        <button type="submit" class="btn btn-light">
+            {% if request.session.lang == 'mr' %}फिल्टर{% else %}Filter{% endif %}
+        </button>
+    </form>
+
+    <!-- 🔹 Cards -->
+    <div class="row text-center">
+        <div class="col-md-6">
+            <div class="card bg-primary p-3">
+                <h3>
+                    {% if request.session.lang == 'mr' %}एकूण दूध{% else %}Total Milk{% endif %}
+                </h3>
+                <h2>{{ total_milk }} L</h2>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card bg-success p-3">
+                <h3>
+                    {% if request.session.lang == 'mr' %}एकूण कमाई{% else %}Total Earnings{% endif %}
+                </h3>
+                <h2>₹{{ total_earnings }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Table Title -->
+    <h3 class="mt-4 text-center">
+        {% if request.session.lang == 'mr' %}
+            शेतकरीनुसार अहवाल
+        {% else %}
+            Farmer-wise Summary
+        {% endif %}
+    </h3>
+
+    <!-- 🔹 Table -->
+    <table class="table table-dark mt-3">
+        <tr>
+            <th>{% if request.session.lang == 'mr' %}शेतकरी{% else %}Farmer{% endif %}</th>
+            <th>{% if request.session.lang == 'mr' %}एकूण दूध{% else %}Total Milk{% endif %}</th>
+            <th>{% if request.session.lang == 'mr' %}एकूण रक्कम{% else %}Total Amount{% endif %}</th>
+        </tr>
+
+        {% for f in farmer_summary %}
+        <tr>
+            <td>{{ f.farmer__name }}</td>
+            <td>{{ f.total_qty }} L</td>
+            <td>₹{{ f.total_amt }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">
+                {% if request.session.lang == 'mr' %}
+                    डेटा उपलब्ध नाही
+                {% else %}
+                    No data available
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- 🔹 Back -->
+    <div class="text-center mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-light">
+            {% if request.session.lang == 'mr' %}
+                ← डॅशबोर्ड
+            {% else %}
+                ← Dashboard
+            {% endif %}
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

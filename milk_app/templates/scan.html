@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Farmer QR</title>
+
+    <!-- QR Scanner -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #dfe9f3, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 420px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .lang-btn {
+            background: #27ae60;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .divider {
+            margin: 15px 0;
+            font-size: 13px;
+            color: #777;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="/" class="back-btn">← Dashboard</a>
+        <a href="/change-language/" class="lang-btn">🌐 EN / मराठी</a>
+    </div>
+
+    <!-- Title -->
+    {% if request.session.lang == 'mr' %}
+        <h2>QR कोड स्कॅन करा</h2>
+    {% else %}
+        <h2>Scan Farmer QR</h2>
+    {% endif %}
+
+    <!-- QR Scanner -->
+    <div id="reader"></div>
+
+    <!-- Divider -->
+    <div class="divider">
+        {% if request.session.lang == 'mr' %}
+            किंवा Farmer ID टाका
+        {% else %}
+            OR Enter Farmer ID
+        {% endif %}
+    </div>
+
+    <!-- Manual Search -->
+    <form action="/get-farmer/" method="get">
+        <input type="text" name="farmer_id" placeholder="FARMER_1" required>
+
+        <button type="submit">
+            {% if request.session.lang == 'mr' %}
+                शोधा
+            {% else %}
+                Search
+            {% endif %}
+        </button>
+    </form>
+
+    <div class="note">
+        {% if request.session.lang == 'mr' %}
+            कॅमेरा काम करत नसेल तर ID वापरा
+        {% else %}
+            If camera not working, use Farmer ID
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    function onScanSuccess(decodedText) {
+
+        // ✅ IMPORTANT (Do not change this)
+        if (decodedText.startsWith("http")) {
+            window.location.href = decodedText;
+        } else {
+            window.location.href = "/get-farmer/?farmer_id=" + decodedText;
+        }
+    }
+
+    function onScanFailure(error) {
+        // ignore
+    }
+
+    let scanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: 250 },
+        false
+    );
+
+    scanner.render(onScanSuccess, onScanFailure);
+</script>
+
+</body>
+</html>

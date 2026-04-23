@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main Login</title>
+
+    <style>
+        body {
+            margin:0;
+            padding:0;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .box {
+            background:white;
+            padding:30px 40px;
+            border-radius:12px;
+            width:350px;
+            text-align:center;
+            box-shadow:0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-bottom:15px;
+        }
+
+        select, input {
+            width:100%;
+            padding:10px;
+            margin:10px 0;
+            border-radius:6px;
+            border:1px solid #ccc;
+        }
+
+        button {
+            width:100%;
+            padding:10px;
+            background:#27ae60;
+            color:white;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;
+        }
+
+        button:hover {
+            background:#2ecc71;
+        }
+
+        .error {
+            color:red;
+            margin-bottom:10px;
+        }
+
+        .forgot {
+            margin-top:10px;
+        }
+
+        .forgot a {
+            text-decoration:none;
+            color:#2980b9;
+            font-size:14px;
+        }
+
+        .forgot a:hover {
+            text-decoration:underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Login</h2>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <select name="role" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="farmer">Farmer</option>
+        </select>
+
+        <input type="text" name="username" placeholder="Username" required>
+
+        <input type="password" name="password" placeholder="Password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- ✅ Forgot Password -->
+    <div class="forgot">
+        <a href="/forgot-password/">Forgot Password?</a>
+    </div>
+
+</div>
+
+</body>
+</html>

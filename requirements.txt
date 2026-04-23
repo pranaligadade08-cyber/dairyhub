@@ -1,0 +1,8 @@
+Django>=5.0,<7.0
+gunicorn
+whitenoise
+qrcode[pil]
+openpyxl
+requests
+Pillow
+dj-database-url

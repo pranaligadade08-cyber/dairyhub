@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Farmer Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #dfe9f3, #ffffff);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .lang-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #2980b9;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* AI assistant */
+        .assistant-fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #2980b9, #1abc9c);
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(41, 128, 185, 0.45);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .assistant-fab:hover {
+            transform: scale(1.05);
+        }
+
+        .assistant-panel {
+            position: fixed;
+            bottom: 92px;
+            right: 24px;
+            width: min(400px, calc(100vw - 48px));
+            max-height: min(520px, calc(100vh - 120px));
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .assistant-panel.open {
+            display: flex;
+        }
+
+        .assistant-head {
+            background: linear-gradient(135deg, #2980b9, #1abc9c);
+            color: white;
+            padding: 14px 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assistant-close {
+            background: rgba(255,255,255,0.25);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .assistant-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            min-height: 200px;
+            max-height: 320px;
+            background: #f8fafc;
+        }
+
+        .assistant-msg {
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .assistant-msg.user {
+            background: #d6eaf8;
+            margin-left: 24px;
+        }
+
+        .assistant-msg.bot {
+            background: white;
+            border: 1px solid #e2e8f0;
+            margin-right: 24px;
+        }
+
+        .assistant-msg.error {
+            background: #fdecea;
+            border: 1px solid #f5c6cb;
+            margin-right: 0;
+        }
+
+        .assistant-input-row {
+            padding: 12px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .assistant-input-row textarea {
+            flex: 1;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .assistant-send {
+            background: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .assistant-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .suggested-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background: #fff;
+        }
+
+        .suggestion-chip {
+            background: #e1f5fe;
+            color: #0288d1;
+            border: 1px solid #81d4fa;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .suggestion-chip:hover {
+            background: #b3e5fc;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🌐 Language Button -->
+<a href="/change-language/" class="lang-btn">🌐 EN / मराठी</a>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="card header">
+        {% if request.session.lang == 'mr' %}
+            <h2>👋 स्वागत आहे {{ farmer.name }}</h2>
+        {% else %}
+            <h2>👋 Welcome {{ farmer.name }}</h2>
+        {% endif %}
+
+        <a href="/farmer-logout/" class="logout-btn">
+            {% if request.session.lang == 'mr' %}
+                बाहेर पडा
+            {% else %}
+                Logout
+            {% endif %}
+        </a>
+    </div>
+
+    <!-- Farmer Info -->
+    <div class="card">
+        {% if request.session.lang == 'mr' %}
+            <h3>👨‍🌾 शेतकरी माहिती</h3>
+            <p><b>गाव:</b> {{ farmer.village }}</p>
+            <p><b>मोबाइल:</b> {{ farmer.mobile }}</p>
+            <p><b>शेतकरी आयडी:</b> {{ farmer.farmer_id }}</p>
+        {% else %}
+            <h3>👨‍🌾 Farmer Information</h3>
+            <p><b>Village:</b> {{ farmer.village }}</p>
+            <p><b>Mobile:</b> {{ farmer.mobile }}</p>
+            <p><b>Farmer ID:</b> {{ farmer.farmer_id }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Records -->
+    <div class="card">
+        {% if request.session.lang == 'mr' %}
+            <h3>🥛 दूध नोंदी</h3>
+        {% else %}
+            <h3>🥛 Your Milk Records</h3>
+        {% endif %}
+
+        <table>
+            <tr>
+                {% if request.session.lang == 'mr' %}
+                    <th>तारीख</th>
+                    <th>प्रमाण</th>
+                    <th>फॅट</th>
+                    <th>एकूण</th>
+                {% else %}
+                    <th>Date</th>
+                    <th>Quantity</th>
+                    <th>Fat</th>
+                    <th>Total</th>
+                {% endif %}
+            </tr>
+
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.date|date:"d-m-Y H:i" }}</td>
+                <td>{{ entry.quantity }}</td>
+                <td>{{ entry.fat }}</td>
+                <td>{{ entry.total_amount|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">
+                    {% if request.session.lang == 'mr' %}
+                        कोणतीही नोंद उपलब्ध नाही
+                    {% else %}
+                        No records available
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
+
+<!-- CSRF for assistant API -->
+{% csrf_token %}
+
+<!-- Farmer AI assistant -->
+<button type="button" class="assistant-fab" id="assistantFab" title="{% if request.session.lang == 'mr' %}मदत विचारा{% else %}Ask assistant{% endif %}" aria-label="{% if request.session.lang == 'mr' %}AI सहाय्यक{% else %}AI assistant{% endif %}">
+    <span style="font-size: 26px;">👨‍🌾</span>
+</button>
+
+<div class="assistant-panel" id="assistantPanel" role="dialog" aria-labelledby="assistantTitle">
+    <div class="assistant-head">
+        <span id="assistantTitle">{% if request.session.lang == 'mr' %}👨‍🌾 कृषी सहाय्यक{% else %}👨‍🌾 Dairy Assistant{% endif %}</span>
+        <button type="button" class="assistant-close" id="assistantClose" aria-label="Close">×</button>
+    </div>
+    <div class="assistant-messages" id="assistantMessages"></div>
+    <div class="suggested-questions" id="suggestedQuestions">
+        {% if request.session.lang == 'mr' %}
+            <div class="suggestion-chip" onclick="sendSuggestion('दुधातील फॅट कसे वाढवावे?')"><span>📈</span> फॅट वाढवा</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('आजचा दुधाचा दर काय आहे?')"><span>💰</span> दुधाचा दर</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('गायीच्या आरोग्यासाठी टिप्स द्या')"><span>🐄</span> गायीचे आरोग्य</div>
+        {% else %}
+            <div class="suggestion-chip" onclick="sendSuggestion('How to increase milk fat?')"><span>📈</span> Increase Fat</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('What is today\'s milk rate?')"><span>💰</span> Milk Rate</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('Tips for cow health')"><span>🐄</span> Cow Health</div>
+        {% endif %}
+    </div>
+    <div class="assistant-input-row">
+        <textarea id="assistantInput" rows="2" placeholder="{% if request.session.lang == 'mr' %}तुमचा प्रश्न इथे लिहा...{% else %}Type your question...{% endif %}"></textarea>
+        <button type="button" class="assistant-send" id="assistantSend">{% if request.session.lang == 'mr' %}पाठवा{% else %}Send{% endif %}</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    var fab = document.getElementById('assistantFab');
+    var panel = document.getElementById('assistantPanel');
+    var closeBtn = document.getElementById('assistantClose');
+    var messagesEl = document.getElementById('assistantMessages');
+    var input = document.getElementById('assistantInput');
+    var sendBtn = document.getElementById('assistantSend');
+    var csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+
+    function getCsrf() {
+        if (csrfInput && csrfInput.value) return csrfInput.value;
+        var m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+
+    function appendMsg(text, cls) {
+        var div = document.createElement('div');
+        div.className = 'assistant-msg ' + cls;
+        div.textContent = text;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function openPanel() {
+        panel.classList.add('open');
+        if (!messagesEl.dataset.seeded) {
+            var hint = {% if request.session.lang == 'mr' %}
+                'नमस्कार! दूध, फॅट, किंमत किंवा प्राणी निगा संबंधी प्रश्न विचारा.'
+            {% else %}
+                'Hi! Ask about milk, fat %, payments, or general dairy farming tips.'
+            {% endif %};
+            appendMsg(hint, 'bot');
+            messagesEl.dataset.seeded = '1';
+        }
+        input.focus();
+    }
+
+    function closePanel() {
+        panel.classList.remove('open');
+    }
+
+    fab.addEventListener('click', function () {
+        if (panel.classList.contains('open')) closePanel();
+        else openPanel();
+    });
+    closeBtn.addEventListener('click', closePanel);
+
+    async function sendMessage() {
+        var text = (input.value || '').trim();
+        if (!text) return;
+        input.value = '';
+        appendMsg(text, 'user');
+        sendBtn.disabled = true;
+        try {
+            var res = await fetch('{% url "farmer_assistant_chat" %}', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrf()
+                },
+                body: JSON.stringify({ message: text })
+            });
+            var data = await res.json().catch(function () { return {}; });
+            if (data.reply) {
+                appendMsg(data.reply, res.ok ? 'bot' : 'bot');
+            } else {
+                var err = data.error || ('HTTP ' + res.status);
+                var friendly = {% if request.session.lang == 'mr' %}
+                    'क्षमस्व, उत्तर मिळाले नाही. नंतर पुन्हा प्रयत्न करा.'
+                {% else %}
+                    'Sorry, something went wrong. Please try again.'
+                {% endif %};
+                appendMsg(friendly + ' (' + err + ')', 'error');
+            }
+        } catch (e) {
+            appendMsg({% if request.session.lang == 'mr' %}'जाळ्यात त्रुटी. पुन्हा प्रयत्न करा.'{% else %}'Network error. Try again.'{% endif %}, 'error');
+        }
+        sendBtn.disabled = false;
+        input.focus();
+    }
+
+    window.sendSuggestion = function(text) {
+        if (!panel.classList.contains('open')) return;
+        input.value = text;
+        sendMessage();
+    };
+
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

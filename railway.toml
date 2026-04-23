@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "gunicorn dairy_project.wsgi --bind 0.0.0.0:$PORT"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[deploy.releaseCommand]
+command = "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
